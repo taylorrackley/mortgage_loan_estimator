@@ -1,23 +1,17 @@
 <template>
-  <div id="app">
-    <b-container>
-      <b-row>
-        <b-col col="12">
-          <Form />
-        </b-col>
-      </b-row>
-    </b-container>
-  </div>
+    <div id="app">
+        <FormInput />
+    </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import Form from './components/Form.vue';
+import FormInput from './components/FormInput.vue';
 
 @Component({
-  components: {
-    Form,
-  },
+    components: {
+        FormInput,
+    },
 })
 export default class App extends Vue {}
 </script>
