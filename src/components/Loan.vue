@@ -4,9 +4,7 @@
             <b-col cols="12">
                 <b-row>
                     <b-col>
-                        <label for="gross_annual_income"
-                            >Gross Annual Income (before tax)</label
-                        >
+                        <label for="gross_annual_income">Gross Annual Income (before tax)</label>
                     </b-col>
                     <b-col>
                         {{ grossIncome.value }}
@@ -24,9 +22,7 @@
             <b-col cols="12">
                 <b-row>
                     <b-col>
-                        <label for="max_housing_expense"
-                            >Max Housing Expense Percentage</label
-                        >
+                        <label for="max_housing_expense">Max Housing Expense Percentage</label>
                     </b-col>
                     <b-col>
                         {{ maxHousingExpensePercentage.value }}
