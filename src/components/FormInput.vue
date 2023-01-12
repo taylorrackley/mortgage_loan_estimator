@@ -136,7 +136,13 @@
                             ></b-form-input>
                         </b-col>
                         <b-col cols="12">
-                            <b-button variant="success" class="w-100">Email my Estimate</b-button>
+                            <b-button
+                                variant="success"
+                                class="w-100"
+                                @click="sendEmail"
+                            >
+                                Email my Estimate
+                            </b-button>
                         </b-col>
                     </b-row>
                 </b-container>
@@ -162,16 +168,33 @@ export default class FormInput extends Vue {
 
     sendEmail(): void {
         const templateParams = {
-            full_name: 'John Smith',
-            loan_amount: '$100,000',
+            from_name: this.fullName,
+            phone: this.phone,
+            contact_email: this.email,
+            loan_amount: this.loanAmount,
         };
 
+        // Send to JR Mortgage
+        const result = emailjs.send(
+            process.env.VUE_APP_SERVICE_ID,
+            process.env.VUE_APP_JR_MORTGAGE_TEMPLATE,
+            templateParams,
+            process.env.VUE_APP_EMAILJS_PUBLIC_KEY,
+        );
+
+        const userParams = {
+            user_email: this.email,
+            loan_estimate: this.formatCurrency(this.loanAmount),
+        };
+        // Send to user
         emailjs.send(
             process.env.VUE_APP_SERVICE_ID,
-            process.env.VUE_APP_EMAIL_TEMPLATE,
-            templateParams,
-            process.env.VUE_APP_EMAILJS_API_KEY,
+            process.env.VUE_APP_USER_EMAIL_TEMPLATE,
+            userParams,
+            process.env.VUE_APP_EMAILJS_PUBLIC_KEY,
         );
+
+        // this.resetForm();
     }
 
     grossIncome = {
@@ -194,6 +217,11 @@ export default class FormInput extends Vue {
         max: 100000,
         step: 1000,
     };
+
+    resetForm() {
+        // eslint-disable-next-line
+        location.reload();
+    }
 
     formatCurrency(number: number) {
         return numeral(number).format('($0,0)');
@@ -224,11 +252,7 @@ export default class FormInput extends Vue {
             * (1 - (process.env.VUE_APP_MINIMUM_DOWN_PAYMENT / 100));
         const months = process.env.VUE_APP_YEARS_OF_MORTGAGE * 12;
         const rate = (process.env.VUE_APP_ANNUAL_INTEREST_RATE_PERCENTAGE / 100) / 12;
-        console.log(presentValue);
-        console.log(months);
-        console.log(rate);
         const pmt = 0 - (presentValue * rate) / (1 - (1 + rate) ** (0 - months));
-        console.log(`pmt: ${pmt}`);
         return pmt;
     }
 
