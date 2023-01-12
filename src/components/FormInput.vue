@@ -1,84 +1,114 @@
 <template>
-    <b-container style="padding-top: 150px;" fluid>
-        <b-row>
-            <b-col cols="6">
-                <b-container fluid>
-                    <b-row>
-                        <b-col cols="12">
-                            <label for="gross_annual_income" class="float-left">
-                                Gross Annual Income (before tax)</label>
-                            <span class="float-right font-weight-bold">
-                                {{ incomeFormatted }} </span>
-                            <b-form-input
-                                input-id="gross_annual_income"
-                                v-model="grossIncome.value"
-                                type="range"
-                                :min="grossIncome.min"
-                                :max="grossIncome.max"
-                                :step="grossIncome.step"
-                            ></b-form-input>
-                        </b-col>
-                        <b-col cols="12">
-                            <label for="max_housing_expense" class="float-left">
-                                Total Debt Payments (monthly)</label>
-                            <span class="float-right font-weight-bold">
-                                {{ totalMonthlyDebtPayments.value }}</span>
-                            <b-form-input
-                                input-id="max_housing_expense"
-                                v-model="totalMonthlyDebtPayments.value"
-                                type="range"
-                                :min="totalMonthlyDebtPayments.min"
-                                :max="totalMonthlyDebtPayments.max"
-                                :step="totalMonthlyDebtPayments.step"
-                            ></b-form-input>
-                        </b-col>
-                        <b-col cols="12">
-                            <label>Max Monthly Payment (based on income)</label>
-                            <b-form-input
-                                disabled
-                                type="text"
-                                :value="maxMonthlyPayment"
-                            ></b-form-input>
-                        </b-col>
-                        <b-col cols="12">
-                            <label>Property Tax (monthly estimate)</label>
-                            <b-form-input
-                                disabled
-                                type="text"
-                                :value="monthlyPropertyTax"
-                            ></b-form-input>
-                        </b-col>
-                        <b-col cols="12">
-                            <label>Home Owner's Insurance (monthly estimate)</label>
-                            <b-form-input
-                                disabled
-                                type="text"
-                                :value="monthlyHomeInsurance"
-                            ></b-form-input>
-                        </b-col>
-                        <b-col cols="12">
-                            <label>Max PI Payment (monthly estimate)</label>
-                            <b-form-input
-                                disabled
-                                type="text"
-                                :value="monthlyPIPayment"
-                            ></b-form-input>
-                        </b-col>
-                        <b-col cols="12">
-                            <label>Loan Amount</label>
-                            <b-form-input
-                                disabled
-                                type="text"
-                                :value="loanAmount"
-                            ></b-form-input>
-                        </b-col>
-                    </b-row>
-                </b-container>
+    <b-container style="padding-top: 10vh;" fluid>
+        <b-row class="mb-4">
+            <b-col class="text-left font-weight-bold" style="font-size:40px;">
+                Home Loan<br>
+                Affordability<br>
+                Estimate<br>
             </b-col>
             <b-col cols="6">
-                <b-row class="mb-3">
-                    <img src="logo.jpeg" alt="Logo" class="logo mx-auto d-block">
+                <img src="logo.jpeg" alt="Logo" class="logo mx-auto d-block">
+            </b-col>
+        </b-row>
+        <b-row>
+            <b-col cols="6">
+                <b-row>
+                    <b-col cols="12" class="mb-3">
+                        <label
+                            for="gross_annual_income"
+                            class="float-left"
+                            v-html="'Gross Annual Income (before tax)'"
+                        />
+                        <span
+                            class="float-right font-weight-bold"
+                            v-html="formatCurrency(grossIncome.value)"
+                        />
+                        <b-form-input
+                            input-id="gross_annual_income"
+                            v-model="grossIncome.value"
+                            type="range"
+                            :min="grossIncome.min"
+                            :max="grossIncome.max"
+                            :step="grossIncome.step"
+                        ></b-form-input>
+                    </b-col>
+                    <b-col cols="12" class="mb-3">
+                        <label
+                            for="available_funds"
+                            class="float-left"
+                            v-html="'Total Debt Payments (monthly)'"
+                        />
+                        <span
+                            class="float-right font-weight-bold"
+                            v-html="formatCurrency(totalMonthlyDebtPayments.value)"
+                        />
+                        <b-form-input
+                            input-id="available_funds"
+                            v-model="totalMonthlyDebtPayments.value"
+                            type="range"
+                            :min="totalMonthlyDebtPayments.min"
+                            :max="totalMonthlyDebtPayments.max"
+                            :step="totalMonthlyDebtPayments.step"
+                        ></b-form-input>
+                    </b-col>
+                    <b-col cols="12" class="mb-5">
+                        <label
+                            for="max_housing_expense"
+                            class="float-left"
+                            v-html="'Available Funds'"
+                        />
+                        <span
+                            class="float-right font-weight-bold"
+                            v-html="formatCurrency(availableFunds.value)"
+                        />
+                        <b-form-input
+                            input-id="max_housing_expense"
+                            v-model="availableFunds.value"
+                            type="range"
+                            :min="availableFunds.min"
+                            :max="availableFunds.max"
+                            :step="availableFunds.step"
+                        ></b-form-input>
+                    </b-col>
+                    <b-col cols="12" class="mb-3">
+                        <label>Max Monthly Payment <small>(based on income)</small></label>
+                        <span
+                            class="font-weight-bold float-right"
+                            v-html="formatCurrency(maxMonthlyPayment)"
+                        />
+                    </b-col>
+                    <b-col cols="12" class="mb-3">
+                        <label>Property Tax <small>(monthly estimate)</small></label>
+                        <span
+                            class="font-weight-bold float-right"
+                            v-html="formatCurrency(monthlyPropertyTax)"
+                        />
+                    </b-col>
+                    <b-col cols="12" class="mb-3">
+                        <label>Home Owner's Insurance <small>(monthly estimate)</small></label>
+                        <span
+                            class="font-weight-bold float-right"
+                            v-html="formatCurrency(monthlyHomeInsurance)"
+                        />
+                    </b-col>
+                    <b-col cols="12" class="mb-3">
+                        <label>Max PI Payment <small>(monthly estimate)</small></label>
+                        <span
+                            class="font-weight-bold float-right"
+                            v-html="formatCurrency(monthlyPIPayment)"
+                        />
+                    </b-col>
+                    <!-- <b-col cols="12">
+                        <label>Loan Amount</label>
+                        <b-form-input
+                            disabled
+                            type="text"
+                            :value="loanAmount"
+                        ></b-form-input>
+                    </b-col> -->
                 </b-row>
+            </b-col>
+            <b-col cols="6">
                 <b-container fluid>
                     <b-row>
                         <b-col cols="12" class="mb-4">
@@ -86,6 +116,14 @@
                             <b-form-input
                                 input-id="full_name"
                                 v-model="fullName"
+                                type="text"
+                            ></b-form-input>
+                        </b-col>
+                        <b-col cols="12" class="mb-4">
+                            <label>Phone</label>
+                            <b-form-input
+                                input-id="phone"
+                                v-model="phone"
                                 type="text"
                             ></b-form-input>
                         </b-col>
@@ -118,6 +156,8 @@ export default class FormInput extends Vue {
 
     fullName = '';
 
+    phone = '';
+
     email = '';
 
     sendEmail(): void {
@@ -144,12 +184,19 @@ export default class FormInput extends Vue {
     totalMonthlyDebtPayments = {
         value: 500,
         min: 0,
-        max: 10000,
+        max: 2000,
         step: 10,
     };
 
-    get incomeFormatted() {
-        return numeral(this.grossIncome.value).format('($0,0)');
+    availableFunds = {
+        value: 20000,
+        min: 0,
+        max: 100000,
+        step: 1000,
+    };
+
+    formatCurrency(number: number) {
+        return numeral(number).format('($0,0)');
     }
 
     get maxMonthlyPayment() {
@@ -159,7 +206,7 @@ export default class FormInput extends Vue {
     }
 
     get monthlyPropertyTax() {
-        const percentage = process.env.VUE_APP_PROPERTY_TEXT_PERCENTAGE / 100;
+        const percentage = process.env.VUE_APP_PROPERTY_TAX_PERCENTAGE / 100;
         return Math.ceil(percentage * this.maxMonthlyPayment);
     }
 
@@ -168,8 +215,35 @@ export default class FormInput extends Vue {
         return Math.ceil(percentage * this.maxMonthlyPayment);
     }
 
-    get monthlyPIPayment() {
+    get monthlyPIPaymentBasedOnExpenses() {
         return ((this.maxMonthlyPayment - this.monthlyPropertyTax) - this.monthlyHomeInsurance);
+    }
+
+    get monthlyPIPaymentBasedOnFunds() {
+        const presentValue = (0 - this.maxHomePriceBasedOnFunds)
+            * (1 - (process.env.VUE_APP_MINIMUM_DOWN_PAYMENT / 100));
+        const months = process.env.VUE_APP_YEARS_OF_MORTGAGE * 12;
+        const rate = (process.env.VUE_APP_ANNUAL_INTEREST_RATE_PERCENTAGE / 100) / 12;
+        console.log(presentValue);
+        console.log(months);
+        console.log(rate);
+        const pmt = 0 - (presentValue * rate) / (1 - (1 + rate) ** (0 - months));
+        console.log(`pmt: ${pmt}`);
+        return pmt;
+    }
+
+    get monthlyPIPayment() {
+        return this.monthlyPIPaymentBasedOnExpenses < this.monthlyPIPaymentBasedOnFunds
+            ? this.monthlyPIPaymentBasedOnExpenses : this.monthlyPIPaymentBasedOnFunds;
+    }
+
+    get maxHomePriceBasedOnFunds() {
+        const funds = this.availableFunds.value - process.env.VUE_APP_FIXED_CLOSING_COSTS;
+        const percentageRemoved = parseInt(process.env.VUE_APP_MINIMUM_DOWN_PAYMENT, 10)
+            + parseInt(process.env.VUE_APP_CLOSIING_COSTS_PERCENTAGE, 10);
+        const result = funds / (percentageRemoved / 100);
+        console.log(`Max Price Funds: ${result}`, funds, percentageRemoved);
+        return result;
     }
 
     get loanAmount() {
