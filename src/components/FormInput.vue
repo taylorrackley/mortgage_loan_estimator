@@ -1,13 +1,22 @@
 <template>
-    <b-container style="padding-top: 10vh;" fluid>
+    <!-- <b-overlay
+        id="overlay-background"
+        class="h-100"
+        :show="emailSending"
+        :opacity="0.9"
+        blur="2px"
+        rounded="sm"
+    > -->
+    <b-container class="h-100" style="padding-top: 10vh;">
         <b-row class="mb-4">
-            <b-col class="text-left font-weight-bold" style="font-size:40px;">
-                Home Loan<br>
+            <b-col class="text-left font-weight-bold montserrat"
+                style="font-size:40px; color: #000">
+                Home<br>
                 Affordability<br>
-                Estimate<br>
+                Calculator<br>
             </b-col>
             <b-col cols="6">
-                <img src="logo.jpeg" alt="Logo" class="logo mx-auto d-block">
+                <img src="logo.webp" alt="Logo" class="logo mx-auto d-block">
             </b-col>
         </b-row>
         <b-row>
@@ -27,6 +36,7 @@
                             input-id="gross_annual_income"
                             v-model="grossIncome.value"
                             type="range"
+                            class="form-control-ld"
                             :min="grossIncome.min"
                             :max="grossIncome.max"
                             :step="grossIncome.step"
@@ -46,6 +56,7 @@
                             input-id="available_funds"
                             v-model="totalMonthlyDebtPayments.value"
                             type="range"
+                            class="form-control-lg"
                             :min="totalMonthlyDebtPayments.min"
                             :max="totalMonthlyDebtPayments.max"
                             :step="totalMonthlyDebtPayments.step"
@@ -64,6 +75,8 @@
                         <b-form-input
                             input-id="max_housing_expense"
                             v-model="availableFunds.value"
+                            size="lg"
+                            v-bind:style="{'font-size': '20px;'}"
                             type="range"
                             :min="availableFunds.min"
                             :max="availableFunds.max"
@@ -71,10 +84,10 @@
                         ></b-form-input>
                     </b-col>
                     <b-col cols="12" class="mb-3">
-                        <label>Max Monthly Payment <small>(based on income)</small></label>
+                        <label>Max PI Payment <small>(monthly estimate)</small></label>
                         <span
                             class="font-weight-bold float-right"
-                            v-html="formatCurrency(maxMonthlyPayment)"
+                            v-html="formatCurrency(monthlyPIPayment)"
                         />
                     </b-col>
                     <b-col cols="12" class="mb-3">
@@ -92,20 +105,20 @@
                         />
                     </b-col>
                     <b-col cols="12" class="mb-3">
-                        <label>Max PI Payment <small>(monthly estimate)</small></label>
+                        <label>Max Monthly Payment <small>(based on income)</small></label>
                         <span
                             class="font-weight-bold float-right"
-                            v-html="formatCurrency(monthlyPIPayment)"
+                            v-html="formatCurrency(maxMonthlyPayment)"
                         />
                     </b-col>
-                    <!-- <b-col cols="12">
+                    <b-col cols="12">
                         <label>Loan Amount</label>
                         <b-form-input
                             disabled
                             type="text"
-                            :value="loanAmount"
+                            :value="homePrice"
                         ></b-form-input>
-                    </b-col> -->
+                    </b-col>
                 </b-row>
             </b-col>
             <b-col cols="6">
@@ -122,7 +135,7 @@
                         <b-col cols="12" class="mb-4">
                             <label>Phone</label>
                             <b-form-input
-                                input-id="phone"
+                                input-id="phone-number-input"
                                 v-model="phone"
                                 type="text"
                             ></b-form-input>
@@ -148,7 +161,27 @@
                 </b-container>
             </b-col>
         </b-row>
+        <b-modal
+            v-model="emailSending"
+            class="text-center"
+            centered
+            hide-footer
+            hide-header
+        >
+            <h2 class="p5 text-center mb-4" style="margin: 50px;">
+                Thank You<br><br>
+                Your estimate is in your inbox!</h2>
+                <div class="w-100 text-center">
+                    <b-button
+                        @click="resetForm()"
+                        class="w-75 mb-5"
+                    >
+                        Close
+                    </b-button>
+                </div>
+        </b-modal>
     </b-container>
+    <!-- </b-overlay> -->
 </template>
 
 <script lang="ts">
@@ -159,23 +192,30 @@ import numeral from 'numeral';
 @Component
 export default class FormInput extends Vue {
     name = 'FormInput';
-
     fullName = '';
-
     phone = '';
-
     email = '';
+    emailSending = false;
 
     sendEmail(): void {
+        this.emailSending = true;
+
         const templateParams = {
             from_name: this.fullName,
             phone: this.phone,
             contact_email: this.email,
-            loan_amount: this.loanAmount,
+            loan_estimate: this.formatCurrency(this.loanAmount),
+            income: this.formatCurrency(this.grossIncome.value),
+            monthly_debt: this.formatCurrency(this.totalMonthlyDebtPayments.value),
+            available_funds: this.formatCurrency(this.availableFunds.value),
+            max_pi_payment: this.formatCurrency(this.monthlyPIPayment),
+            property_tax: this.formatCurrency(this.monthlyPropertyTax),
+            home_owners_insurance: this.formatCurrency(this.monthlyHomeInsurance),
+            max_monthly_payment: this.formatCurrency(this.maxMonthlyPayment),
         };
 
         // Send to JR Mortgage
-        const result = emailjs.send(
+        emailjs.send(
             process.env.VUE_APP_SERVICE_ID,
             process.env.VUE_APP_JR_MORTGAGE_TEMPLATE,
             templateParams,
@@ -193,8 +233,6 @@ export default class FormInput extends Vue {
             userParams,
             process.env.VUE_APP_EMAILJS_PUBLIC_KEY,
         );
-
-        // this.resetForm();
     }
 
     grossIncome = {
@@ -207,14 +245,14 @@ export default class FormInput extends Vue {
     totalMonthlyDebtPayments = {
         value: 500,
         min: 0,
-        max: 2000,
+        max: 15000,
         step: 10,
     };
 
     availableFunds = {
         value: 20000,
         min: 0,
-        max: 100000,
+        max: 200000,
         step: 1000,
     };
 
@@ -228,19 +266,30 @@ export default class FormInput extends Vue {
     }
 
     get maxMonthlyPayment() {
-        const monthlyIncome = this.grossIncome.value / 12;
-        const debtToIncomeRatio = process.env.VUE_APP_DEBT_TO_INCOME_RATIO / 100;
-        return Math.ceil((monthlyIncome * debtToIncomeRatio) - this.totalMonthlyDebtPayments.value);
+        return this.maxMonthlyPaymentBasedOnDebtToIncomeRatio < this.maxMonthlyPaymentBasedOnIncome
+            ? this.maxMonthlyPaymentBasedOnDebtToIncomeRatio : this.maxMonthlyPaymentBasedOnIncome;
     }
 
     get monthlyPropertyTax() {
         const percentage = process.env.VUE_APP_PROPERTY_TAX_PERCENTAGE / 100;
-        return Math.ceil(percentage * this.maxMonthlyPayment);
+        return percentage * this.maxMonthlyPayment;
     }
 
     get monthlyHomeInsurance() {
         const percentage = process.env.VUE_APP_HOME_INSURANCE_PERCENTAGE / 100;
-        return Math.ceil(percentage * this.maxMonthlyPayment);
+        return percentage * this.maxMonthlyPayment;
+    }
+
+    get maxMonthlyPaymentBasedOnIncome() {
+        const rate = process.env.VUE_APP_MAX_HOUSING_EXPENSE / 100;
+        const result = this.grossIncome.value * rate;
+        return result;
+    }
+
+    get maxMonthlyPaymentBasedOnDebtToIncomeRatio() {
+        const monthlyIncome = this.grossIncome.value / 12;
+        const debtToIncomeRatio = process.env.VUE_APP_DEBT_TO_INCOME_RATIO / 100;
+        return (monthlyIncome * debtToIncomeRatio) - this.totalMonthlyDebtPayments.value;
     }
 
     get monthlyPIPaymentBasedOnExpenses() {
@@ -266,14 +315,29 @@ export default class FormInput extends Vue {
         const percentageRemoved = parseInt(process.env.VUE_APP_MINIMUM_DOWN_PAYMENT, 10)
             + parseInt(process.env.VUE_APP_CLOSIING_COSTS_PERCENTAGE, 10);
         const result = funds / (percentageRemoved / 100);
-        console.log(`Max Price Funds: ${result}`, funds, percentageRemoved);
+        return result;
+    }
+
+    get downPaymentBasedOnFunds() {
+        const closingCosts = process.env.VUE_APP_FIXED_CLOSING_COSTS;
+        const money = this.availableFunds.value - closingCosts;
+        const rate = process.env.VUE_APP_CLOSIING_COSTS_PERCENTAGE / 100;
+        const result = (money - (rate * this.loanAmount)) / (1 + rate);
         return result;
     }
 
     get loanAmount() {
         const rate = process.env.VUE_APP_ANNUAL_INTEREST_RATE_PERCENTAGE;
         const numberOfPayments = process.env.VUE_APP_YEARS_OF_MORTGAGE * 12;
-        return this.presentValue(this.monthlyPIPayment, rate, numberOfPayments);
+        const result = this.presentValue(this.monthlyPIPayment, rate, numberOfPayments);
+        console.log('loan amount: ', result);
+        return result;
+    }
+
+    get homePrice() {
+        const result = this.loanAmount + this.downPaymentBasedOnFunds;
+        console.log('home price: ', result);
+        return Math.floor(result);
     }
 
     calculateRatePerPeriod(interestRate: number): number {
@@ -282,7 +346,26 @@ export default class FormInput extends Vue {
 
     presentValue(monthlyPayment: number, interestRate: number, months: number): number {
         const ratePerPeriod = this.calculateRatePerPeriod(interestRate);
-        return Math.floor(monthlyPayment * ((1 - (1 + ratePerPeriod) ** -months) / ratePerPeriod));
+        return monthlyPayment * ((1 - (1 + ratePerPeriod) ** -months) / ratePerPeriod);
+    }
+
+    mounted() {
+        const input = document.querySelector("input[input-id='phone-number-input']");
+
+        input?.addEventListener('input', (event) => {
+            const target = event.target as HTMLInputElement;
+            // Get the input value
+            let inputValue = target.value;
+
+            // Remove any non-numeric characters
+            inputValue = inputValue.replace(/\D/g, '');
+
+            // Format the input as a phone number
+            inputValue = `${inputValue.substr(0, 3)}-${inputValue.substr(3, 3)}-${inputValue.substr(6, 4)}`;
+
+            // Update the input value
+            target.value = inputValue;
+        });
     }
 }
 </script>

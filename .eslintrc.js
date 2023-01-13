@@ -15,6 +15,7 @@ module.exports = {
     'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     'vuejs-accessibility/label-has-for': 'off',
+    "lines-between-class-members": "off",
     'class-methods-use-this': 'off',
     "indent": ["error", 4]
   },
