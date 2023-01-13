@@ -204,7 +204,7 @@ export default class FormInput extends Vue {
             from_name: this.fullName,
             phone: this.phone,
             contact_email: this.email,
-            loan_estimate: this.formatCurrency(this.loanAmount),
+            loan_estimate: this.formatCurrency(this.homePrice),
             income: this.formatCurrency(this.grossIncome.value),
             monthly_debt: this.formatCurrency(this.totalMonthlyDebtPayments.value),
             available_funds: this.formatCurrency(this.availableFunds.value),
@@ -224,7 +224,7 @@ export default class FormInput extends Vue {
 
         const userParams = {
             user_email: this.email,
-            loan_estimate: this.formatCurrency(this.loanAmount),
+            loan_estimate: this.formatCurrency(this.homePrice),
         };
         // Send to user
         emailjs.send(
@@ -266,8 +266,11 @@ export default class FormInput extends Vue {
     }
 
     get maxMonthlyPayment() {
-        return this.maxMonthlyPaymentBasedOnDebtToIncomeRatio < this.maxMonthlyPaymentBasedOnIncome
+        const result = this.maxMonthlyPaymentBasedOnDebtToIncomeRatio
+            < this.maxMonthlyPaymentBasedOnIncome
             ? this.maxMonthlyPaymentBasedOnDebtToIncomeRatio : this.maxMonthlyPaymentBasedOnIncome;
+        console.log(result);
+        return result;
     }
 
     get monthlyPropertyTax() {
@@ -282,7 +285,7 @@ export default class FormInput extends Vue {
 
     get maxMonthlyPaymentBasedOnIncome() {
         const rate = process.env.VUE_APP_MAX_HOUSING_EXPENSE / 100;
-        const result = this.grossIncome.value * rate;
+        const result = (this.grossIncome.value * rate) / 12;
         return result;
     }
 
