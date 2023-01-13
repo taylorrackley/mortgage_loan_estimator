@@ -1,4 +1,5 @@
-# jr-mortgage
+# JR Mortgage
+[Demo](https://taylorrackley.github.io/mortgage_loan_estimator/)
 
 ## Project setup
 ```

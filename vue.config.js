@@ -3,6 +3,7 @@ const path = require('path');
 
 module.exports = defineConfig({
   transpileDependencies: true,
+  publicPath: process.env.NODE_ENV === 'production' ? '/mortgage_loan_estimator/' : '/',
   chainWebpack: config => {
     config.resolve.alias.set(
       'vue$',
