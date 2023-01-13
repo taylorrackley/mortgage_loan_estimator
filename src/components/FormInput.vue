@@ -1,12 +1,4 @@
 <template>
-    <!-- <b-overlay
-        id="overlay-background"
-        class="h-100"
-        :show="emailSending"
-        :opacity="0.9"
-        blur="2px"
-        rounded="sm"
-    > -->
     <b-container class="h-100" style="padding-top: 10vh;">
         <b-row class="mb-4">
             <b-col class="text-left font-weight-bold montserrat"
@@ -111,14 +103,6 @@
                             v-html="formatCurrency(maxMonthlyPayment)"
                         />
                     </b-col>
-                    <b-col cols="12">
-                        <label>Loan Amount</label>
-                        <b-form-input
-                            disabled
-                            type="text"
-                            :value="homePrice"
-                        ></b-form-input>
-                    </b-col>
                 </b-row>
             </b-col>
             <b-col cols="6">
@@ -181,7 +165,6 @@
                 </div>
         </b-modal>
     </b-container>
-    <!-- </b-overlay> -->
 </template>
 
 <script lang="ts">
