@@ -132,11 +132,19 @@
                                 type="email"
                             ></b-form-input>
                         </b-col>
+                        <b-col cols="12" class="mb-4">
+                            <label>Loan Officer</label>
+                            <b-form-select
+                                v-model="selectedLoanOfficer"
+                                :options="loanOfficers">
+                            </b-form-select>
+                        </b-col>
                         <b-col cols="12">
                             <b-button
                                 variant="success"
                                 class="w-100"
                                 @click="sendEmail"
+                                :disabled="!validForm"
                             >
                                 Email my Estimate
                             </b-button>
@@ -179,6 +187,32 @@ export default class FormInput extends Vue {
     phone = '';
     email = '';
     emailSending = false;
+    selectedLoanOfficer = '';
+
+    loanOfficers = [
+        { value: 'Nicholas Lassiter', text: 'Nicholas Lassiter' },
+        { value: 'Colby Brackeen', text: 'Colby Brackeen' },
+        { value: 'Lisa Marie', text: 'Lisa Marie' },
+        { value: 'Anabella Ruiz', text: 'Anabella Ruiz' },
+        { value: 'John Smutny', text: 'John Smutny' },
+        { value: 'Matthew Medrano', text: 'Matthew Medrano' },
+        { value: 'Ramona Chapman', text: 'Ramona Chapman' },
+        { value: 'Justin Rocheleau', text: 'Justin Rocheleau' },
+        { value: 'Viridiana De Leon', text: 'Viridiana De Leon' },
+    ];
+
+    loanOfficerLink(name: string) {
+        if (name === 'Nicholas Lassiter') return 'https://jrmortgagegroup.com/information';
+        if (name === 'Colby Brackeen') return 'https://jrmortgagegroup.com/information';
+        if (name === 'Lisa Marie') return 'https://jrmortgagegroup.com/information';
+        if (name === 'Anabella Ruiz') return 'https://jrmortgagegroup.com/information';
+        if (name === 'John Smutny') return 'https://jrmortgagegroup.com/information';
+        if (name === 'Matthew Medrano') return 'https://jrmortgagegroup.com/information';
+        if (name === 'Ramona Chapman') return 'https://jrmortgagegroup.com/information';
+        if (name === 'Justin Rocheleau') return 'https://jrmortgagegroup.com/information';
+        if (name === 'Viridiana De Leon') return 'https://jrmortgagegroup.com/information';
+        return 'https://jrmortgagegroup.com/information';
+    }
 
     sendEmail(): void {
         this.emailSending = true;
@@ -195,6 +229,7 @@ export default class FormInput extends Vue {
             property_tax: this.formatCurrency(this.monthlyPropertyTax),
             home_owners_insurance: this.formatCurrency(this.monthlyHomeInsurance),
             max_monthly_payment: this.formatCurrency(this.maxMonthlyPayment),
+            selected_loan_officer: this.selectedLoanOfficer,
         };
 
         // Send to JR Mortgage
@@ -208,6 +243,7 @@ export default class FormInput extends Vue {
         const userParams = {
             user_email: this.email,
             loan_estimate: this.formatCurrency(this.homePrice),
+            loan_officer_link: this.loanOfficerLink(this.selectedLoanOfficer),
         };
         // Send to user
         emailjs.send(
@@ -246,6 +282,14 @@ export default class FormInput extends Vue {
 
     formatCurrency(number: number) {
         return numeral(number).format('($0,0)');
+    }
+
+    get validForm() {
+        if (this.fullName.length < 2) return false;
+        if (this.phone.length < 10) return false;
+        if (this.email.length < 5) return false;
+        if (this.selectedLoanOfficer.length < 1) return false;
+        return true;
     }
 
     get maxMonthlyPayment() {
