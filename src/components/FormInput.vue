@@ -132,7 +132,7 @@
                                 type="email"
                             ></b-form-input>
                         </b-col>
-                        <b-col cols="12" class="mb-4">
+                        <b-col cols="12" class="mb-5">
                             <label>Loan Officer</label>
                             <b-form-select
                                 v-model="selectedLoanOfficer"
@@ -201,18 +201,26 @@ export default class FormInput extends Vue {
         { value: 'Viridiana De Leon', text: 'Viridiana De Leon' },
     ];
 
-    loanOfficerLink(name: string) {
-        if (name === 'Nicholas Lassiter') return 'https://jrmortgagegroup.com/information';
-        if (name === 'Colby Brackeen') return 'https://jrmortgagegroup.com/information';
-        if (name === 'Lisa Marie') return 'https://jrmortgagegroup.com/information';
-        if (name === 'Anabella Ruiz') return 'https://jrmortgagegroup.com/information';
-        if (name === 'John Smutny') return 'https://jrmortgagegroup.com/information';
-        if (name === 'Matthew Medrano') return 'https://jrmortgagegroup.com/information';
-        if (name === 'Ramona Chapman') return 'https://jrmortgagegroup.com/information';
-        if (name === 'Justin Rocheleau') return 'https://jrmortgagegroup.com/information';
-        if (name === 'Viridiana De Leon') return 'https://jrmortgagegroup.com/information';
-        return 'https://jrmortgagegroup.com/information';
-    }
+    grossIncome = {
+        value: 72000,
+        min: 0,
+        max: 250000,
+        step: 1000,
+    };
+
+    totalMonthlyDebtPayments = {
+        value: 500,
+        min: 0,
+        max: 15000,
+        step: 10,
+    };
+
+    availableFunds = {
+        value: 20000,
+        min: 0,
+        max: 200000,
+        step: 1000,
+    };
 
     sendEmail(): void {
         this.emailSending = true;
@@ -254,27 +262,6 @@ export default class FormInput extends Vue {
         );
     }
 
-    grossIncome = {
-        value: 72000,
-        min: 0,
-        max: 250000,
-        step: 1000,
-    };
-
-    totalMonthlyDebtPayments = {
-        value: 500,
-        min: 0,
-        max: 15000,
-        step: 10,
-    };
-
-    availableFunds = {
-        value: 20000,
-        min: 0,
-        max: 200000,
-        step: 1000,
-    };
-
     resetForm() {
         // eslint-disable-next-line
         location.reload();
@@ -282,6 +269,19 @@ export default class FormInput extends Vue {
 
     formatCurrency(number: number) {
         return numeral(number).format('($0,0)');
+    }
+
+    loanOfficerLink(name: string) {
+        if (name === 'Nicholas Lassiter') return 'https://jrmg.my1003app.com/2399487/register';
+        if (name === 'Colby Brackeen') return 'https://jrmg.my1003app.com/2058048/register';
+        if (name === 'Lisa Marie') return 'https://jrmg.my1003app.com/2302146/register';
+        if (name === 'Anabella Ruiz') return 'https://jrmg.my1003app.com/2411758/register';
+        if (name === 'John Smutny') return 'https://jrmg.my1003app.com/2321844/register';
+        if (name === 'Matthew Medrano') return 'https://jrmg.my1003app.com/2278259/register';
+        if (name === 'Ramona Chapman') return 'https://jrmg.my1003app.com/1753891/register';
+        if (name === 'Justin Rocheleau') return 'https://jrmg.my1003app.com/1804953/register';
+        if (name === 'Viridiana De Leon') return 'https://jrmortgagegroup.com/information';
+        return 'https://jrmortgagegroup.com/information';
     }
 
     get validForm() {
