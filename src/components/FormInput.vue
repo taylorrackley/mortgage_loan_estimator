@@ -280,7 +280,7 @@ export default class FormInput extends Vue {
         if (name === 'Matthew Medrano') return 'https://jrmg.my1003app.com/2278259/register';
         if (name === 'Ramona Chapman') return 'https://jrmg.my1003app.com/1753891/register';
         if (name === 'Justin Rocheleau') return 'https://jrmg.my1003app.com/1804953/register';
-        if (name === 'Viridiana De Leon') return 'https://jrmortgagegroup.com/information';
+        if (name === 'Viridiana De Leon') return 'https://jrmg.my1003app.com/1804953/register'; // Use Justin's for now
         return 'https://jrmortgagegroup.com/information';
     }
 
