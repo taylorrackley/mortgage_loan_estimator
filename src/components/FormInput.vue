@@ -179,6 +179,7 @@
 import { Component, Vue } from 'vue-property-decorator';
 import emailjs from '@emailjs/browser';
 import numeral from 'numeral';
+import IMask from 'imask';
 
 @Component
 export default class FormInput extends Vue {
@@ -239,6 +240,12 @@ export default class FormInput extends Vue {
             max_monthly_payment: this.formatCurrency(this.maxMonthlyPayment),
             selected_loan_officer: this.selectedLoanOfficer,
         };
+
+        fetch('https://app.getbonzo.com/api/webhook/4b132ef51468a847a18ebd8d87d05793', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(templateParams),
+        });
 
         // Send to JR Mortgage
         emailjs.send(
@@ -380,21 +387,14 @@ export default class FormInput extends Vue {
     }
 
     mounted() {
-        const input = document.querySelector("input[input-id='phone-number-input']");
+        const input = document.querySelector("input[input-id='phone-number-input']") as HTMLElement;
 
-        input?.addEventListener('input', (event) => {
-            const target = event.target as HTMLInputElement;
-            // Get the input value
-            let inputValue = target.value;
+        if (!input) {
+            this.resetForm();
+        }
 
-            // Remove any non-numeric characters
-            inputValue = inputValue.replace(/\D/g, '');
-
-            // Format the input as a phone number
-            inputValue = `${inputValue.substr(0, 3)}-${inputValue.substr(3, 3)}-${inputValue.substr(6, 4)}`;
-
-            // Update the input value
-            target.value = inputValue;
+        const phoneMask = IMask(input, {
+            mask: '000-000-0000',
         });
     }
 }
