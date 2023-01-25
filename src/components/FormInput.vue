@@ -226,8 +226,20 @@ export default class FormInput extends Vue {
     sendEmail(): void {
         this.emailSending = true;
 
-        const templateParams = {
-            from_name: this.fullName,
+        const nameIndex = this.fullName.indexOf(' ');
+        const names = [];
+        console.log(nameIndex);
+        if (nameIndex > 0) {
+            names.push(this.fullName.slice(0, nameIndex));
+            names.push(this.fullName.slice(nameIndex + 1));
+        } else {
+            names.push(this.fullName);
+        }
+
+        console.log(names);
+        const jrMortgageParams = {
+            first_name: names[0],
+            last_name: names[1] ? names[1] : '',
             phone: this.phone,
             contact_email: this.email,
             loan_estimate: this.formatCurrency(this.homePrice),
@@ -244,14 +256,14 @@ export default class FormInput extends Vue {
         fetch('https://app.getbonzo.com/api/webhook/4b132ef51468a847a18ebd8d87d05793', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(templateParams),
+            body: JSON.stringify(jrMortgageParams),
         });
 
         // Send to JR Mortgage
         emailjs.send(
             process.env.VUE_APP_SERVICE_ID,
             process.env.VUE_APP_JR_MORTGAGE_TEMPLATE,
-            templateParams,
+            jrMortgageParams,
             process.env.VUE_APP_EMAILJS_PUBLIC_KEY,
         );
 
@@ -303,7 +315,6 @@ export default class FormInput extends Vue {
         const result = this.maxMonthlyPaymentBasedOnDebtToIncomeRatio
             < this.maxMonthlyPaymentBasedOnIncome
             ? this.maxMonthlyPaymentBasedOnDebtToIncomeRatio : this.maxMonthlyPaymentBasedOnIncome;
-        console.log(result);
         return result;
     }
 
@@ -367,13 +378,11 @@ export default class FormInput extends Vue {
         const rate = process.env.VUE_APP_ANNUAL_INTEREST_RATE_PERCENTAGE;
         const numberOfPayments = process.env.VUE_APP_YEARS_OF_MORTGAGE * 12;
         const result = this.presentValue(this.monthlyPIPayment, rate, numberOfPayments);
-        console.log('loan amount: ', result);
         return result;
     }
 
     get homePrice() {
         const result = this.loanAmount + this.downPaymentBasedOnFunds;
-        console.log('home price: ', result);
         return Math.floor(result);
     }
 
